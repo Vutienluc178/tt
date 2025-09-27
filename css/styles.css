@@ -1,1 +1,104 @@
-body{font-family:sans-serif;}
+/* ===========
+  Nhật ký GV – styles.css
+=========== */
+:root{
+  --bg: #0b1220;
+  --panel: #111827;
+  --card: #0f172a;
+  --text: #e5e7eb;
+  --muted:#94a3b8;
+  --primary:#2563eb;
+  --accent:#22c55e;
+  --danger:#ef4444;
+  --border:#1f2937;
+  --chip:#111827;
+}
+
+:root.light{
+  --bg:#f8fafc;
+  --panel:#ffffff;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#475569;
+  --primary:#2563eb;
+  --accent:#16a34a;
+  --danger:#dc2626;
+  --border:#e2e8f0;
+  --chip:#f1f5f9;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family: system-ui, Segoe UI, Roboto, Arial;
+  background: var(--bg); color: var(--text);
+  display:grid; grid-template-rows:auto 1fr; grid-template-columns: 280px 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "sidebar main";
+}
+
+.hidden{display:none!important}
+
+.topbar{
+  grid-area: topbar;
+  display:flex; gap:.75rem; align-items:center; justify-content:space-between;
+  padding:.5rem .75rem; background:var(--panel); border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:10;
+}
+.brand{display:flex; align-items:center; gap:.5rem}
+.badge{font-size:.75rem; color:var(--muted); border:1px solid var(--border); padding:.1rem .35rem; border-radius:.35rem}
+.top-actions{display:flex; gap:.5rem; align-items:center}
+.top-actions input[type="search"]{min-width:260px; padding:.5rem .6rem; border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:.5rem}
+.top-actions button,.top-actions .import{padding:.5rem .7rem; border:1px solid var(--border); background:var(--card); color:var(--text); border-radius:.5rem; cursor:pointer}
+.top-actions .primary{background:var(--primary); border-color:transparent}
+
+.sidebar{
+  grid-area: sidebar; background:var(--panel); border-right:1px solid var(--border);
+  padding:.75rem; overflow:auto;
+}
+.sidebar h3{margin:.75rem 0 .5rem}
+.pill-group{display:flex; gap:.5rem; flex-wrap:wrap}
+.pill{border:1px solid var(--border); background:var(--chip); color:var(--text); padding:.3rem .6rem; border-radius:999px; cursor:pointer}
+.pill.active{outline:2px solid var(--primary)}
+
+.accordion .acc-header{margin:.75rem 0; cursor:pointer; padding:.5rem; border:1px dashed var(--border); border-radius:.5rem; background:transparent}
+.acc-panel{padding:.25rem .25rem .5rem .25rem}
+.chip-group{display:flex; gap:.4rem; flex-wrap:wrap}
+.chip{background:var(--chip); border:1px solid var(--border); padding:.25rem .5rem; border-radius:999px; cursor:pointer}
+.chip.active{outline:2px solid var(--accent)}
+
+.sidebar-footer{margin-top:1rem; border-top:1px dashed var(--border); padding-top:.5rem; color:var(--muted)}
+
+#main{grid-area:main; display:grid; grid-template-columns: 1fr; grid-template-rows: 1fr; overflow:hidden}
+.note-list{padding:1rem; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:.75rem; overflow:auto}
+.note-card{background:var(--card); border:1px solid var(--border); border-radius:.6rem; padding:.75rem; display:flex; flex-direction:column; gap:.35rem}
+.note-card .title{margin:.1rem 0 .2rem; font-size:1rem}
+.note-card .meta-line{font-size:.8rem; color:var(--muted)}
+.card-actions{display:flex; gap:.35rem; justify-content:flex-end}
+.btn-small{font-size:.85rem; padding:.3rem .5rem; border:1px solid var(--border); background:transparent; color:var(--text); border-radius:.35rem; cursor:pointer}
+.btn-small:hover{border-color:var(--primary)}
+
+.editor{padding:1rem; border-left:1px solid var(--border); background:var(--panel); overflow:auto}
+.editor-head{display:flex; gap:.75rem; align-items:center; justify-content:space-between; margin-bottom:.5rem}
+.editor-actions button{margin-left:.35rem}
+.editor input, .editor select, .editor textarea{
+  width:100%; padding:.6rem .7rem; border:1px solid var(--border);
+  background:var(--card); color:var(--text); border-radius:.5rem; margin:.35rem 0;
+}
+.preview{margin-top:.75rem; background:var(--card); border:1px solid var(--border); border-radius:.5rem; padding:1rem;}
+
+@media (max-width: 960px){
+  body{grid-template-columns: 1fr; grid-template-areas:
+    "topbar"
+    "main";}
+  .sidebar{position:fixed; inset:3.2rem 0 auto 0; height:calc(100% - 3.2rem); transform: translateX(-100%); transition: transform .2s ease}
+  .sidebar.open{transform: translateX(0)}
+  #main{grid-template-columns: 1fr}
+}
+
+@media print{
+  .topbar, .sidebar, .editor-actions #btnClose {display:none!important}
+  body{background:white}
+  .note-card{page-break-inside:avoid}
+}

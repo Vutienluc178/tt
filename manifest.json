@@ -1,1 +1,9 @@
-{"name": "Nh\u1eadt k\u00fd GV"}
+{
+  "name": "Nhật ký Giáo viên – GVCN & Toán",
+  "short_name": "Nhật ký GV",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": []
+}

@@ -1,1 +1,127 @@
-<!DOCTYPE html><html lang='vi'><head><meta charset='utf-8'><title>Nhật ký GV</title></head><body><h1>Nhật ký Giáo viên</h1></body></html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nhật ký Giáo viên – GVCN & Toán</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/styles.css" />
+  <meta name="theme-color" content="#0f172a"/>
+  <meta name="description" content="App ghi chú nhanh cho giáo viên chủ nhiệm & giáo viên Toán – hỗ trợ LaTeX/MathJax, gắn thẻ, lọc theo lớp & chủ đề, xuất/nhập JSON.">
+  <!-- MathJax (CDN) -->
+  <script defer src="js/vendor/mathjax-config.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <button id="btnMenu" aria-label="Mở/đóng menu">☰</button>
+      <strong>Nhật ký GV</strong>
+      <span class="badge">v1.0</span>
+    </div>
+    <div class="top-actions">
+      <input id="searchInput" type="search" placeholder="Tìm kiếm tiêu đề, nội dung, \(x^2\), #thẻ..." />
+      <button id="btnNew" class="primary">+ Ghi chú</button>
+      <button id="btnExport">Xuất JSON</button>
+      <label class="import">
+        Nhập JSON
+        <input id="importInput" type="file" accept=".json" hidden>
+      </label>
+      <button id="btnPrint">Xuất PDF</button>
+      <button id="btnTheme" title="Chuyển nền sáng/tối">🌗</button>
+    </div>
+  </header>
+
+  <aside id="sidebar" class="sidebar">
+    <section>
+      <h3>Chế độ</h3>
+      <div class="pill-group">
+        <button class="pill active" data-mode="all">Tất cả</button>
+        <button class="pill" data-mode="cn">Chủ nhiệm</button>
+        <button class="pill" data-mode="toan">Toán</button>
+      </div>
+    </section>
+
+    <section class="accordion">
+      <h3 class="acc-header" data-acc="lop">Lớp học</h3>
+      <div class="acc-panel">
+        <div class="chip-group" id="classChips"></div>
+      </div>
+
+      <h3 class="acc-header" data-acc="tag">Thẻ (tags)</h3>
+      <div class="acc-panel">
+        <div class="chip-group" id="tagChips"></div>
+      </div>
+
+      <h3 class="acc-header" data-acc="quick">Lọc nhanh</h3>
+      <div class="acc-panel">
+        <label><input type="checkbox" id="filterPinned"> Chỉ xem ghi chú ghim</label><br/>
+        <label><input type="checkbox" id="filterToday"> Ghi chú hôm nay</label><br/>
+        <label><input type="checkbox" id="filterHasStudent"> Có chọn học sinh</label>
+      </div>
+    </section>
+
+    <footer class="sidebar-footer">
+      <small>📌 Mẹo: Gõ #thẻ trong nội dung để tự tạo thẻ. Viết LaTeX: \(\int_0^1 x^2 dx\).</small>
+    </footer>
+  </aside>
+
+  <main id="main">
+    <section id="noteList" class="note-list"></section>
+    <section id="editor" class="editor hidden" aria-live="polite">
+      <div class="editor-head">
+        <input id="noteTitle" placeholder="Tiêu đề ghi chú (vd: Sinh hoạt lớp tuần 5 / Tích phân – ví dụ)" />
+        <div class="editor-actions">
+          <button id="btnPin" title="Ghim ghi chú">📍</button>
+          <button id="btnPreview" title="Xem thử công thức">🔎 Xem preview</button>
+          <button id="btnSave" class="primary">💾 Lưu</button>
+          <button id="btnClose">✖ Đóng</button>
+        </div>
+      </div>
+      <div class="meta">
+        <select id="noteMode">
+          <option value="cn">Chủ nhiệm</option>
+          <option value="toan">Toán</option>
+        </select>
+        <input id="noteClass" placeholder="Lớp (vd: 10A8, 11A2)" />
+        <input id="noteStudent" placeholder="Học sinh (tuỳ chọn)" />
+        <input id="noteTags" placeholder="Thẻ, phân tách dấu phẩy (vd: khen thưởng, vi phạm, #vi_pham)" />
+        <input id="noteDate" type="date" />
+      </div>
+      <textarea id="noteContent" rows="14" placeholder="Nội dung… Hỗ trợ LaTeX/MathJax, ví dụ: \(S=\dfrac{1}{2}ab\sin C\).
+
+Mẹo nhanh:
+- Dùng #thẻ để gắn nhãn
+- Dùng [Tên liên kết](https://…) để chèn link
+- Dán hình ảnh, hệ thống sẽ gợi ý tạo đường link"></textarea>
+
+      <div id="preview" class="preview hidden"></div>
+    </section>
+  </main>
+
+  <template id="noteItemTpl">
+    <article class="note-card">
+      <header>
+        <h4 class="title"></h4>
+        <div class="meta-line"></div>
+      </header>
+      <p class="excerpt"></p>
+      <footer class="card-actions">
+        <button class="btn-small btn-edit">Sửa</button>
+        <button class="btn-small btn-dup">Nhân bản</button>
+        <button class="btn-small btn-pin">Ghim</button>
+        <button class="btn-small btn-del">Xoá</button>
+      </footer>
+    </article>
+  </template>
+
+  <script defer src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(console.warn);
+      });
+    }
+  </script>
+</body>
+</html>
