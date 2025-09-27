@@ -1,0 +1,1 @@
+console.log('Nhật ký GV');
